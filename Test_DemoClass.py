@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as ec #beklenen koşu
 import pytest
 import openpyxl
 from constants import globalConstants as c
+import json
 
 class Test_DemoClass:
     #prefix => test_ 
@@ -29,8 +30,20 @@ class Test_DemoClass:
             data.append((username,password))
 
         return data
+    
+    def readInvalidDataFromJson():
+        file = open("data/invalidLogin.json") 
+        data = json.load(file)
+        parameter = []
 
-    @pytest.mark.parametrize("username,password",getData())
+        for user in data['users']:
+            username = user["username"]
+            password = user["password"]
+            parameter.append((username,password))
+
+        return parameter
+
+    @pytest.mark.parametrize("username,password",readInvalidDataFromJson())
     def test_invalid_login(self,username,password):
         usernameInput = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.ID,c.USERNAME_ID)))
         usernameInput.send_keys(username)
